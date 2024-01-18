@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>Add Vehicle</title>
+</head>
+<body>
+    <h1>Add a New Vehicle</h1>
+
+    <form method="POST" action="{{ url_for('add_vehicle') }}" enctype="multipart/form-data">
+        <!-- Existing vehicle details -->
+        <label>Type new/used:
+            <select name="type" required>
+                <option value="new">New</option>
+                <option value="used">Used</option>
+            </select>
+        </label><br>
+
+
+        <label>Make:
+            <input type="text" name="make" required>
+        </label><br>
+
+        <label>Model:
+            <input type="text" name="model" required>
+        </label><br>
+
+        <label>First Registration:
+            <input type="text" name="first_registration" required>
+        </label><br>
+
+        <label>Mileage:
+            <input type="text" name="mileage" required>
+        </label><br>
+
+        <label>Fuel:
+            <select name="fuel" required>
+                <option value="petrol">Petrol</option>
+                <option value="diesel">Diesel</option>
+
+            </select>
+        </label><br>
+
+
+        <label>Engine Size:
+            <input type="text" name="engine_size" required>
+        </label><br>
+
+        <label>Power:
+            <input type="text" name="power" required>
+        </label><br>
+
+        <label>Gearbox:
+            <select name="gearbox" required>
+                <option value="automatic">Automatic</option>
+                <option value="manual">Manual</option>
+            </select>
+        </label><br>
+
+
+        <label>Number of Seats:
+            <input type="text" name="num_seats" required>
+        </label><br>
+
+        <label>Doors:
+            <input type="text" name="doors" required>
+        </label><br>
+
+        <label>Color:
+            <input type="text" name="color" required>
+        </label><br>
+
+        <!-- Additional details -->
+        <label>Price:
+            <input type="text" name="price" required>
+        </label><br>
+
+        <label>Description:
+            <textarea name="description" required></textarea>
+        </label><br>
+
+        <label>Extras:
+            <textarea name="extras" required></textarea>
+        </label><br>
+
+         <label>Select one or more images:
+            <input type="file" name="images" accept="image/*" multiple required><br>
+             <i>The first photo you choose will be used as the cover photo</i>
+        </label><br>
+
+
+
+
+<!-- Add more file inputs as needed -->
+
+
+        {% for error in form.errors %}
+            <p style="color: red;">{{ error }}</p>
+        {% endfor %}
+
+        <button type="submit">Add Vehicle</button>
+    </form>
+
+    <a href="{{ url_for('home') }}">Back to Home</a>
+
+</body>
+</html>

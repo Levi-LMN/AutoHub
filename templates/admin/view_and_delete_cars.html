@@ -1,0 +1,72 @@
+
+{% block content %}
+    <h1>View and Delete Cars</h1>
+
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Type</th>
+            <th>First Registration</th>
+            <th>Mileage</th>
+            <th>Fuel</th>
+            <th>Engine Size</th>
+            <th>Power</th>
+            <th>Gearbox</th>
+            <th>Number of Seats</th>
+            <th>Doors</th>
+            <th>Color</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for car in cars %}
+            <tr>
+                <td>{{ car.make }}</td>
+                <td>{{ car.model }}</td>
+                <td>{{ car.type }}</td>
+                <td>{{ car.first_registration }}</td>
+                <td>{{ car.mileage }}</td>
+                <td>{{ car.fuel }}</td>
+                <td>{{ car.engine_size }}</td>
+                <td>{{ car.power }}</td>
+                <td>{{ car.gearbox }}</td>
+                <td>{{ car.num_seats }}</td>
+                <td>{{ car.doors }}</td>
+                <td>{{ car.color }}</td>
+                <!-- Modify the <td> section -->
+                <!-- Modify the <td> section -->
+                <td>
+                    <a href="{{ url_for('edit_vehicle', car_id=car.id) }}">Edit</a>
+                    <form method="post" action="{{ url_for('delete_vehicle', car_id=car.id) }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" action="{{ url_for('view_and_delete_cars') }}">
+                        <input type="hidden" name="feature_car_id" value="{{ car.id }}">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            {% if car.is_featured %}
+                                Unfeature
+                            {% else %}
+                                Feature
+                            {% endif %}
+                        </button>
+                    </form>
+                </td>
+
+
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+
+
+
+
+    <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Home</a>
+{% endblock %}

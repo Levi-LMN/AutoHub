@@ -1,0 +1,232 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>PHPJabbers.com | Free Car Dealer Website Template</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../static/assets/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../../static/assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../static/assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="fa fa-car"></span> <span class="title">Car Dealer Website</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+
+							<li><a href="cars.html" class="active">Cars</a></li>
+
+							<li>
+								<a href="#" class="dropdown-toggle">About</a>
+
+								<ul>
+									<li><a href="about.html">About Us</a></li>
+									<li><a href="../../team.html">Team</a></li>
+									<li><a href="../../blog.html">Blog</a></li>
+									<li><a href="../../testimonials.html">Testimonials</a></li>
+									<li><a href="../../faq.html">FAQ</a></li>
+									<li><a href="../../terms.html">Terms</a></li>
+								</ul>
+							</li>
+							<li><a href="../../contact.html">Contact Us</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>Cars</h1>
+
+							<div class="image main">
+								<img src="../../static/images/banner-image-7-1920x500.jpg" class="img-fluid" alt="" />
+							</div>
+						<form action="{{ url_for('all_cars') }}" method="GET">
+							<div class="container-fluid">
+								<div class="row">
+			                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+										<div class="form-group">
+											<label class="m-n">Used/New:</label>
+											<select name="type">
+												<option value="">All</option>
+												{% for vehicle_type in vehicle_types %}
+													<option value="{{ vehicle_type }}">{{ vehicle_type }}</option>
+												{% endfor %}
+											</select>
+										</div>
+										<br>
+									</div>
+
+									<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+										<div class="form-group">
+											<label class="m-n">Make:</label>
+											<select name="make">
+												<option value="">-- All --</option>
+												{% for make in makes %}
+													<option value="{{ make }}">{{ make }}</option>
+												{% endfor %}
+											</select>
+										</div>
+										<br>
+									</div>
+
+									<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+										<div class="form-group">
+											<label class="m-n">Fuel Type:</label>
+											<select name="fuel">
+												<option value="">All</option>
+												{% for fuel in fuels %}
+													<option value="{{ fuel }}">{{ fuel }}</option>
+												{% endfor %}
+											</select>
+										</div>
+										<br>
+									</div>
+
+									<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+										<div class="form-group">
+											<label class="m-n">Transmission:</label>
+											<select name="gearbox">
+												<option value="">All</option>
+												{% for gearbox in gearboxes %}
+													<option value="{{ gearbox }}">{{ gearbox }}</option>
+												{% endfor %}
+											</select>
+										</div>
+										<br>
+									</div>
+
+
+
+										<!-- Repeat the above pattern for other filter fields -->
+
+			                            <br>
+										 <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+											<button type="submit" class="btn btn-primary">Apply Filters</button>
+										</div>
+			                        </div>
+                         		</div>
+                        	</div>
+						</form>
+                        	<br>
+						<!-- Debugging: Print the value of filters_applied -->
+<p>Debug: {{ filters_applied }}</p>
+
+						<!-- filtered cars-->
+						{% if filters_applied is not none and filters_applied != '' %}
+							<!-- Display filtered results with a heading -->
+							<center><h2><!--display what filters were applied-->Filter Results for {{ filters_applied }}
+									</h2>
+							</center>
+							<section class="tiles">
+								{% for car in cars %}
+									<article class="style{{ loop.index }}">
+										<span class="image">
+											{% set image_filenames = car.additional_details.images.split(',') %}
+											{% if image_filenames %}
+												<img src="{{ url_for('static', filename='uploads/images/' + image_filenames[0]) }}" alt="" />
+											{% else %}
+												<img src="{{ url_for('static', filename='uploads/images/default.jpg') }}" alt="" />
+											{% endif %}
+										</span>
+										<a href="{{ url_for('car_details', car_id=car.id) }}">
+											<h2>{{ car.make }} {{ car.model }}</h2>
+											<p><del><!--put canceled amount--></del> <strong>{{ car.additional_details.price }}</strong></p>
+											<p>
+												<i class="fa fa-dashboard"></i> {{ car.mileage }} &nbsp;&nbsp;&nbsp;&nbsp;
+												<i class="fa fa-cube"></i> {{ car.engine_size }} cc&nbsp;&nbsp;&nbsp;&nbsp;
+												<i class="fa fa-cog"></i> {{ car.gearbox }}
+											</p>
+										</a>
+									</article>
+								{% endfor %}
+							</section>
+						{% endif %}
+                        
+							<!-- always list Cars -->
+							{% if not filters_applied %}
+								<center><h2>All Cars</h2></center>
+								<section class="tiles">
+									{% for car in all_cars %}
+
+											<article class="style{{ loop.index }}">
+										<span class="image">
+											{% set image_filenames = car.additional_details.images.split(',') %}
+											{% if image_filenames %}
+												<img src="{{ url_for('static', filename='uploads/images/' + image_filenames[0]) }}" alt="" />
+											{% else %}
+												<img src="{{ url_for('static', filename='uploads/images/default.jpg') }}" alt="" />
+											{% endif %}
+										</span>
+										<a href="{{ url_for('car_details', car_id=car.id) }}">
+											<h2>{{ car.make }} {{ car.model }}</h2>
+											<p><del><!--put canceled amount--></del> <strong>{{ car.additional_details.price }}</strong></p>
+											<p>
+												<i class="fa fa-dashboard"></i> {{ car.mileage }} &nbsp;&nbsp;&nbsp;&nbsp;
+												<i class="fa fa-cube"></i> {{ car.engine_size }} cc&nbsp;&nbsp;&nbsp;&nbsp;
+												<i class="fa fa-cog"></i> {{ car.gearbox }}
+											</p>
+										</a>
+									</article>
+
+									{% endfor %}
+								</section>
+							{% endif %}
+
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<ul class="icons">
+									<li><a href="#" class="icon style2 fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="#" class="icon style2 fa-facebook"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon style2 fa-instagram"><span class="label">Instagram</span></a></li>
+									<li><a href="#" class="icon style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
+								</ul>
+
+								&nbsp;
+							</section>
+
+							<ul class="copyright">
+								<li>Copyright © 2020 Company Name </li>
+								<li>Template by: <a href="https://www.phpjabbers.com/">PHPJabbers.com</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../static/assets/js/jquery.min.js"></script>
+			<script src="../../static/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+			<script src="../../static/assets/js/jquery.scrolly.min.js"></script>
+			<script src="../../static/assets/js/jquery.scrollex.min.js"></script>
+			<script src="../../static/assets/js/main.js"></script>
+
+	</body>
+</html>

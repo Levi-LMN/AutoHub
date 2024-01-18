@@ -1,0 +1,241 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title> AutoHub {{ car.make }} {{ car.model }}</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../static/assets/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../../static/assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../static/assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="fa fa-car"></span> <span class="title">AutoHub</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+
+							<li><a href="cars.html" class="active">Cars</a></li>
+
+							<li>
+								<a href="#" class="dropdown-toggle">About</a>
+
+								<ul>
+									<li><a href="about.html">About Us</a></li>
+									<li><a href="../../team.html">Team</a></li>
+									<li><a href="../../blog.html">Blog</a></li>
+									<li><a href="../../testimonials.html">Testimonials</a></li>
+									<li><a href="../../faq.html">FAQ</a></li>
+									<li><a href="../../terms.html">Terms</a></li>
+								</ul>
+							</li>
+							<li><a href="../../contact.html">Contact Us</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>{{ car.make }} {{ car.model }} <span class="pull-right">{{ car.additional_details.price }}</span></h1>
+							
+							<div class="container-fluid">
+								<div class="row">
+									<div class="col-lg-7">
+  <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+      {% for index in range(car.additional_details.images.split(',')|length) %}
+        <li data-target="#carouselExampleIndicators" data-slide-to="{{ index }}" {% if index == 0 %}class="active"{% endif %}></li>
+      {% endfor %}
+    </ol>
+    <div class="carousel-inner">
+      {% for index in range(car.additional_details.images.split(',')|length) %}
+        <div class="carousel-item {% if index == 0 %}active{% endif %}">
+          <img class="d-block w-100" src="{{ url_for('static', filename='uploads/images/' + car.additional_details.images.split(',')[index]) }}" alt="Slide {{ index + 1 }}">
+        </div>
+      {% endfor %}
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+</div>
+
+
+									<div class="col-lg-5">
+										<h3>Vehicle Description</h3>
+										{% for point in car.additional_details.description.split('\n') %}
+											<p>- {{ point }}</p>
+										{% endfor %}
+									</div>
+
+								</div>
+							</div>
+
+							<br>
+							
+
+							<form action="#">
+								<div class="fields">
+									<div class="field quarter">
+					                    <label class="m-n">Type</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.type }}">
+					                </div>
+
+					                <div class="field quarter">
+					                    <label class="m-n">Make</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.make }}">
+					                </div>
+
+					                <div class="field quarter">
+					                    <label class="m-n">Model</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.model }}">
+					                </div>
+
+					                <div class="field quarter">
+					                    <label class="m-n">First registration</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.first_registration }}">
+					                </div>
+
+					                <div class="field quarter">
+					                    <label class="m-n">Mileage</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.mileage }}">
+					                </div>
+
+									<div class="field quarter">
+					                    <label class="m-n">Fuel</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.fuel }}">
+					                </div>
+
+					                <div class="field quarter">
+					                    <label class="m-n">Engine size</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.engine_size }}">
+					                </div>
+
+									<div class="field quarter">
+					                    <label class="m-n">Power</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.power }}">
+					                </div>
+
+					                <div class="field quarter">
+					                    <label class="m-n">Gearbox</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.gearbox }}">
+					                </div>
+
+					                <div class="field quarter">
+					                    <label class="m-n">Number of seats</label>
+					                     
+					                    <input type="text" readonly="" value=" {{ car.num_seats }}">
+					                </div>
+
+					                <div class="field quarter">
+					                    <label class="m-n">Doors</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.doors }}">
+					                </div>
+
+					                <div class="field quarter">
+					                    <label class="m-n">Color</label>
+					                     
+					                    <input type="text" readonly="" value="{{ car.color }}">
+					                </div>
+								</div>
+							</form>
+							
+							<div class="container-fluid">
+								<div class="row">
+									<div class="col-md-3">
+										<h3>Contact Details</h3>
+
+										<ul class="alt">
+											<li><span class="fa fa-user"></span> Autohub Kenya</li>
+											<li><span class="fa fa-phone"></span> <a href="tel:+254723405566">+254 7234 05 566</a></li>
+											<li><span class="fa fa-whatsapp"></span> <a href="https://wa.me/254748778517?text=Hello%20I%20am%20interested%20in%20the%20{{ car.make }}%20{{ car.model }}.%20Can%20you%20provide%20more%20information?" target="_blank"> Click here to Inquire about this car Via whatsapp</a></li>
+											<li><span class="fa fa-envelope-o"></span> <a href="mailto:autohub@gmail.com?subject=Inquiry%20about%20{{ car.make }}%20{{ car.model }}">autohub@gmail.com</a></li>
+										</ul>
+
+
+
+
+									</div>
+
+									<div class="col-md-9">
+										<h3>Extras </h3>
+										
+										<p>{{ car.additional_details.extras }}</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<ul class="icons">
+										<li><a href="#" class="icon style2 fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="#" class="icon style2 fa-facebook"><span class="label">Facebook</span></a></li>
+										<li><a href="#" class="icon style2 fa-instagram"><span class="label">Instagram</span></a></li>
+										<li><a href="#" class="icon style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
+										<!-- Add WhatsApp icon and link -->
+										<li><a href="https://wa.me/1234567890" class="icon style2 fa-whatsapp"><span class="label">WhatsApp</span></a></li>
+									</ul>
+
+
+								&nbsp;
+							</section>
+
+							<ul class="copyright">
+								<li>Copyright © 2024 AutoHub </li>
+								<li>Template by: <a href="https://levi-lmn.github.io/Portfolio/">Levi Mukuha</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../static/assets/js/jquery.min.js"></script>
+			<script src="../../static/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+			<script src="../../static/assets/js/jquery.scrolly.min.js"></script>
+			<script src="../../static/assets/js/jquery.scrollex.min.js"></script>
+			<script src="../../static/assets/js/main.js"></script>
+
+	</body>
+</html>

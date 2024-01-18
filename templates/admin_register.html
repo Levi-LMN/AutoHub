@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Registration</title>
+</head>
+<body>
+    <h1>Admin Registration</h1>
+
+    <form method="POST" action="{{ url_for('admin_register') }}">
+        {{ form.hidden_tag() }}
+
+        <label for="username">Username:</label>
+        {{ form.username(class="form-control") }}
+        <br>
+
+        <label for="email">Email:</label>
+        {{ form.email(class="form-control") }}
+        <br>
+
+        <label for="password">Password:</label>
+        {{ form.password(class="form-control") }}
+        <br>
+
+        <label for="confirm_password">Confirm Password:</label>
+        {{ form.confirm_password(class="form-control") }}
+        <br>
+
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!-- edit_vehicle.html -->
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Vehicle Details</h2>
+    <form method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-dismissible fade show">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+        <div class="form-group">
+            <label for="type">Type</label>
+            <select name="type" class="form-control" required>
+                <option value="new" {% if form.type.data == 'new' %}selected{% endif %}>New</option>
+                <option value="used" {% if form.type.data == 'used' %}selected{% endif %}>Used</option>
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="make">Make</label>
+            {{ form.make(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="model">Model</label>
+            {{ form.model(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="first_registration">First Registration</label>
+            {{ form.first_registration(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="mileage">Mileage</label>
+            {{ form.mileage(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="fuel">Fuel</label>
+            <select name="fuel" class="form-control" required>
+                <option value="petrol" {% if form.fuel.data == 'petrol' %}selected{% endif %}>Petrol</option>
+                <option value="diesel" {% if form.fuel.data == 'diesel' %}selected{% endif %}>Diesel</option>
+                <option value="hybrid" {% if form.fuel.data == 'hybrid' %}selected{% endif %}>Hybrid</option>
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="engine_size">Engine Size</label>
+            {{ form.engine_size(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="power">Power</label>
+            {{ form.power(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="gearbox">Gearbox</label>
+            <select name="gearbox" class="form-control" required>
+                <option value="automatic" {% if form.gearbox.data == 'automatic' %}selected{% endif %}>Automatic</option>
+                <option value="manual" {% if form.gearbox.data == 'manual' %}selected{% endif %}>Manual</option>
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="num_seats">Number of Seats</label>
+            {{ form.num_seats(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="doors">Doors</label>
+            {{ form.doors(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="color">Color</label>
+            {{ form.color(class="form-control") }}
+        </div>
+
+       <div class="form-group">
+            <label for="price">Price</label>
+            {{ form.price(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            {{ form.description(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="extras">Extras</label>
+            {{ form.extras(class="form-control") }}
+        </div>
+
+
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
+{% endblock %}
