@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>PHPJabbers.com | Free Car Dealer Website Template</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../static/assets/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../../static/assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../static/assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="fa fa-car"></span> <span class="title">Car Dealer Website</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="{{ url_for('home') }}" >Home</a></li>
+							<li><a href="{{ url_for('all_cars') }}">Cars</a></li>
+
+							<li>
+								<a href="#" class="dropdown-toggle">
+									{% if current_user.is_authenticated %}
+										{{ current_user.username }}
+									{% else %}
+										User Settings
+									{% endif %}
+								</a>
+
+								<ul>
+									{% if current_user.is_authenticated %}
+										<li><a href="#">Account Settings</a></li>
+										<li><a href="{{ url_for('logout') }}">Logout</a></li>
+									{% else %}
+										<li><a href="{{ url_for('user_login') }}">Login</a></li>
+										<li><a href="{{ url_for('register') }}">Register</a></li>
+									{% endif %}
+								</ul>
+							</li>
+
+							<li>
+								<a href="#" class="dropdown-toggle">About</a>
+								<ul>
+									<li><a href="{{ url_for('about') }}" >About Us</a></li>
+									<li><a href="{{ url_for('team') }}">Team</a></li>
+									<li><a href="{{ url_for('blog') }}" class="active">Blog</a></li>
+									<li><a href="{{ url_for('testimonials') }}">Testimonials</a></li>
+									<li><a href="{{ url_for('faq') }}">FAQ</a></li>
+									<li><a href="{{ url_for('terms') }}">Terms</a></li>
+
+								</ul>
+							</li>
+
+							<li><a href="{{ url_for('contact') }}">Contact Us</a></li>
+
+						</ul>
+					</nav>
+
+				 <!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<article class="blog-post">
+								<h1>{{ blog.title }}</h1>
+								<p class="post-meta">Posted by {{ blog.author }} on {{ blog.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+								<img src="{{ blog.image_url }}" alt="{{ blog.title }}" />
+								<p>{{ blog.content }}</p>
+							</article>
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<h2>Leave a comment</h2>
+								
+								<form method="post" action="#">
+									<div class="fields">
+										<div class="field half">
+											<input type="text" name="name" id="name" placeholder="Name" />
+										</div>
+
+										<div class="field half">
+											<input type="text" name="email" id="email" placeholder="Email" />
+										</div>
+
+										<div class="field">
+											<textarea name="message" id="message" rows="3" placeholder="Your message"></textarea>
+										</div>
+
+										<div class="field text-right">
+											<label>&nbsp;</label>
+
+											<ul class="actions">
+												<li><input type="submit" value="Submit" class="primary" /></li>
+											</ul>
+										</div>
+									</div>
+								</form>
+							</section>
+							<section>
+
+								<h2>Share This</h2>
+
+								<ul class="icons">
+									<li><a href="#" class="icon style2 fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="#" class="icon style2 fa-facebook"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
+									<li><a href="#" class="icon style2 fa-behance"><span class="label">Behance</span></a></li>
+								</ul>
+							</section>
+
+							<ul class="copyright">
+								<li>Copyright © 2020 Company Name </li>
+								<li>Template by: <a href="https://www.phpjabbers.com/">PHPJabbers.com</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../static/assets/js/jquery.min.js"></script>
+			<script src="../../static/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+			<script src="../../static/assets/js/jquery.scrolly.min.js"></script>
+			<script src="../../static/assets/js/jquery.scrollex.min.js"></script>
+			<script src="../../static/assets/js/main.js"></script>
+
+	</body>
+</html>

@@ -4,9 +4,9 @@
 		<title>PHPJabbers.com | Free Car Dealer Website Template</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="static/assets/bootstrap/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="static/assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="static/assets/css/noscript.css" /></noscript>
+		<link rel="stylesheet" href="../../static/assets/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../../static/assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../static/assets/css/noscript.css" /></noscript>
 	</head>
 	<body class="is-preload">
 		<!-- Wrapper -->
@@ -17,7 +17,7 @@
 					<div class="inner">
 
 						<!-- Logo -->
-							<a href="templates/pages/index.html" class="logo">
+							<a href="index.html" class="logo">
 								<span class="fa fa-car"></span> <span class="title">Car Dealer Website</span>
 							</a>
 
@@ -35,23 +35,44 @@
 				<nav id="menu">
 					<h2>Menu</h2>
 					<ul>
-						<li><a href="templates/pages/index.html">Home</a></li>
+						<li><a href="{{ url_for('home') }}" >Home</a></li>
+						<li><a href="{{ url_for('all_cars') }}">Cars</a></li>
 
-						<li><a href="templates/pages/cars.html">Cars</a></li>
+						<li>
+							<a href="#" class="dropdown-toggle">
+								{% if current_user.is_authenticated %}
+									{{ current_user.username }}
+								{% else %}
+									User Settings
+								{% endif %}
+							</a>
+
+							<ul>
+								{% if current_user.is_authenticated %}
+									<li><a href="#">Account Settings</a></li>
+									<li><a href="{{ url_for('logout') }}">Logout</a></li>
+								{% else %}
+									<li><a href="{{ url_for('user_login') }}">Login</a></li>
+									<li><a href="{{ url_for('register') }}">Register</a></li>
+								{% endif %}
+							</ul>
+						</li>
 
 						<li>
 							<a href="#" class="dropdown-toggle">About</a>
-
 							<ul>
-								<li class="active"><a href="templates/pages/about.html">About Us</a></li>
-								<li><a href="team.html">Team</a></li>
-								<li><a href="blog.html">Blog</a></li>
-								<li><a href="testimonials.html">Testimonials</a></li>
-								<li><a href="faq.html">FAQ</a></li>
-								<li><a href="terms.html">Terms</a></li>
+								<li><a href="{{ url_for('about') }}" >About Us</a></li>
+								<li><a href="{{ url_for('team') }}" >Team</a></li>
+								<li><a href="{{ url_for('blog') }}">Blog</a></li>
+								<li><a href="{{ url_for('testimonials') }}">Testimonials</a></li>
+								<li><a href="{{ url_for('faq') }}">FAQ</a></li>
+								<li><a href="{{ url_for('terms') }}" class="active">Terms</a></li>
+
 							</ul>
 						</li>
-						<li><a href="contact.html">Contact Us</a></li>
+
+						<li><a href="{{ url_for('contact') }}">Contact Us</a></li>
+
 					</ul>
 				</nav>
 
@@ -61,7 +82,7 @@
 							<h1>Terms</h1>
 
 							<div class="image main">
-								<img src="static/images/banner-image-5-1920x500.jpg" class="img-fluid" alt="" />
+								<img src="../../static/images/banner-image-5-1920x500.jpg" class="img-fluid" alt="" />
 							</div>
 							
 							<h2 class="m-n">1.Lorem ipsum dolor sit amet.</h2>
@@ -105,10 +126,10 @@
 			</div>
 
 		<!-- Scripts -->
-			<script src="static/assets/js/jquery.min.js"></script>
-			<script src="static/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-			<script src="static/assets/js/jquery.scrolly.min.js"></script>
-			<script src="static/assets/js/jquery.scrollex.min.js"></script>
-			<script src="static/assets/js/main.js"></script>
+			<script src="../../static/assets/js/jquery.min.js"></script>
+			<script src="../../static/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+			<script src="../../static/assets/js/jquery.scrolly.min.js"></script>
+			<script src="../../static/assets/js/jquery.scrollex.min.js"></script>
+			<script src="../../static/assets/js/main.js"></script>
 	</body>
 </html>

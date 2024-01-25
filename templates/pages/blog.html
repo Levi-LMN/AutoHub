@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>PHPJabbers.com | Free Car Dealer Website Template</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../static/assets/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../../static/assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../static/assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="fa fa-car"></span> <span class="title">Car Dealer Website</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="{{ url_for('home') }}" >Home</a></li>
+							<li><a href="{{ url_for('all_cars') }}">Cars</a></li>
+
+							<li>
+								<a href="#" class="dropdown-toggle">
+									{% if current_user.is_authenticated %}
+										{{ current_user.username }}
+									{% else %}
+										User Settings
+									{% endif %}
+								</a>
+
+								<ul>
+									{% if current_user.is_authenticated %}
+										<li><a href="#">Account Settings</a></li>
+										<li><a href="{{ url_for('logout') }}">Logout</a></li>
+									{% else %}
+										<li><a href="{{ url_for('user_login') }}">Login</a></li>
+										<li><a href="{{ url_for('register') }}">Register</a></li>
+									{% endif %}
+								</ul>
+							</li>
+
+							<li>
+								<a href="#" class="dropdown-toggle">About</a>
+								<ul>
+									<li><a href="{{ url_for('about') }}">About Us</a></li>
+									<li><a href="{{ url_for('team') }}">Team</a></li>
+									<li><a href="{{ url_for('blog') }}" class="active">Blog</a></li>
+									<li><a href="{{ url_for('testimonials') }}">Testimonials</a></li>
+									<li><a href="{{ url_for('faq') }}">FAQ</a></li>
+									<li><a href="{{ url_for('terms') }}">Terms</a></li>
+
+								</ul>
+							</li>
+
+							<li><a href="{{ url_for('contact') }}">Contact Us</a></li>
+
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>Blog</h1>
+
+							<div class="image main">
+								<img src="../../static/images/banner-image-6-1920x500.jpg" class="img-fluid" alt="" />
+							</div>
+							
+							<div class="container-fluid">
+								<div class="row">
+									<div class="col-9">
+										<div class="row">
+											{% for blog in blogs %}
+													<div class="col-sm-6 text-center">
+														<img src="{{ blog.image_url }}" class="img-fluid" alt="{{ blog.title }}" />
+
+														<h2 class="m-n"><a href="{{ url_for('view_blog', blog_id=blog.id) }}">{{ blog.title }}</a></h2>
+
+														<p>{{ blog.author }} &nbsp;|&nbsp; {{ blog.timestamp.strftime('%m/%d/%Y %H:%M') }}</p>
+													</div>
+												{% endfor %}
+										</div>
+									</div>
+
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<ul class="icons">
+									<li><a href="#" class="icon style2 fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="#" class="icon style2 fa-facebook"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon style2 fa-instagram"><span class="label">Instagram</span></a></li>
+									<li><a href="#" class="icon style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
+								</ul>
+
+								&nbsp;
+							</section>
+
+							<ul class="copyright">
+								<li>Copyright © 2020 Company Name </li>
+								<li>Template by: <a href="https://www.phpjabbers.com/">PHPJabbers.com</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../static/assets/js/jquery.min.js"></script>
+			<script src="../../static/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+			<script src="../../static/assets/js/jquery.scrolly.min.js"></script>
+			<script src="../../static/assets/js/jquery.scrollex.min.js"></script>
+			<script src="../../static/assets/js/main.js"></script>
+
+	</body>
+</html>

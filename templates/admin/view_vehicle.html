@@ -1,0 +1,43 @@
+<!-- templates/view_vehicle.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Vehicle</title>
+</head>
+<body>
+    <h1>Vehicle Details</h1>
+
+    <h2>{{ vehicle.make }} {{ vehicle.model }}</h2>
+
+    <p>Type: {{ vehicle.type }}</p>
+    <p>First Registration: {{ vehicle.first_registration }}</p>
+    <p>Mileage: {{ vehicle.mileage }}</p>
+    <p>Fuel: {{ vehicle.fuel }}</p>
+    <p>Engine Size: {{ vehicle.engine_size }}</p>
+    <p>Power: {{ vehicle.power }}</p>
+    <p>Gearbox: {{ vehicle.gearbox }}</p>
+    <p>Number of Seats: {{ vehicle.num_seats }}</p>
+    <p>Doors: {{ vehicle.doors }}</p>
+    <p>Color: {{ vehicle.color }}</p>
+
+    <h2>Additional Details</h2>
+
+    <p>Price: {{ vehicle.additional_details.price }}</p>
+    <p>Description: {{ vehicle.additional_details.description }}</p>
+    <p>Extras: {{ vehicle.additional_details.extras }}</p>
+
+    <h2>Images</h2>
+
+    <!-- Assuming images are stored as a comma-separated string -->
+    {% for image in vehicle.additional_details.images.split(',') %}
+        <img src="{{ url_for('static', filename='images/' + image) }}" alt="Vehicle Image">
+    {% endfor %}
+
+    <br>
+    <a href="{{ url_for('edit_vehicle', id=vehicle.id) }}">Edit</a>
+
+    <!-- Add any additional styling or content as needed -->
+</body>
+</html>

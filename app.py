@@ -8,6 +8,11 @@ from flask_bcrypt import Bcrypt
 from flask_wtf.file import FileField, FileAllowed
 from werkzeug.utils import secure_filename
 import os
+from datetime import datetime
+from flask_mail import Mail, Message
+from flask import jsonify
+from functools import wraps
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '20420171682004'
@@ -15,11 +20,26 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///autohub.db'  # SQLite databas
 app.config['UPLOAD_FOLDER'] = 'static/uploads/images'
 app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png'}  # Add this line
 
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'retailsysx@gmail.com'
+app.config['MAIL_PASSWORD'] = 'qecs yhcc gkeq nlee'
+app.config['MAIL_DEFAULT_SENDER'] = 'retailsysx@gmail.com'
+# Configuration
+app.config['SHOW_LOGIN_PAGE'] = True
+
+
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'user_login'
 bcrypt = Bcrypt(app)
+# Initialize Flask-Mail
+mail = Mail(app)
 
+
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 
 # Common User class for SQLAlchemy model
 class User(db.Model, UserMixin):
@@ -28,10 +48,16 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    error_log = db.Column(db.Text)
 
     @property
     def role(self):
         return "admin" if self.is_admin else "user"
+
+    def add_to_error_log(self, error_message):
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        log_entry = f"{timestamp}: {error_message}\n"
+        self.error_log = log_entry + self.error_log if self.error_log else log_entry
 
 
 # Forms for registration
@@ -101,23 +127,41 @@ class AddVehicleForm(FlaskForm):
     images = FileField('Images', validators=[FileAllowed(app.config['ALLOWED_EXTENSIONS'], 'Images only!')])
 
 
-class EditVehicleForm(FlaskForm):
-    type = StringField('Type', validators=[InputRequired()])
-    make = StringField('Make', validators=[InputRequired()])
-    model = StringField('Model', validators=[InputRequired()])
-    first_registration = StringField('First Registration', validators=[InputRequired()])
-    mileage = StringField('Mileage', validators=[InputRequired()])
-    fuel = StringField('Fuel', validators=[InputRequired()])
-    engine_size = StringField('Engine Size', validators=[InputRequired()])
-    power = StringField('Power', validators=[InputRequired()])
-    gearbox = StringField('Gearbox', validators=[InputRequired()])
-    num_seats = StringField('Number of Seats', validators=[InputRequired()])
-    doors = StringField('Doors', validators=[InputRequired()])
-    color = StringField('Color', validators=[InputRequired()])
-    price = StringField('Price', validators=[InputRequired()])
-    description = TextAreaField('Description', validators=[InputRequired()])
-    extras = TextAreaField('Extras', validators=[InputRequired()])
-    images = FileField('Images', validators=[FileAllowed(app.config['ALLOWED_EXTENSIONS'], 'Images only!')])
+class Contact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=False)
+    subject = db.Column(db.String(255), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    replied = db.Column(db.Boolean, default=False)
+
+    @classmethod
+    def get_all_messages(cls):
+        return cls.query.all()
+
+    def __repr__(self):
+        return f'<Contact {self.name}>'
+
+
+class ContactForm(FlaskForm):
+    name = StringField('Name', validators=[InputRequired()])
+    email = StringField('Email', validators=[InputRequired(), Email()])
+    subject = StringField('Subject', validators=[InputRequired()])
+    message = TextAreaField('Message', validators=[InputRequired()])
+    submit = SubmitField('Send Message')
+
+
+class Blog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    author = db.Column(db.String(50), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    image_url = db.Column(db.String(200), nullable=True)
+
+    def __repr__(self):
+        return f"Blog(id={self.id}, title={self.title}, author={self.author})"
 
 
 # Route for user registration
@@ -144,7 +188,24 @@ def home():
             return redirect(url_for('admin_dashboard'))
 
     cars = Vehicle.query.all()  # Fetch all cars from the database
-    return render_template('pages/index.html', cars=cars)
+
+    if app.config['SHOW_LOGIN_PAGE']:
+        return render_template('pages/index.html', cars=cars)
+    else:
+        return render_template('pages/maintenance.html', cars=cars)
+
+def maintenance_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not app.config['SHOW_LOGIN_PAGE']:
+            return render_template('pages/maintenance.html')
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/toggle_switch', methods=['POST'])
+def toggle_switch():
+    app.config['SHOW_LOGIN_PAGE'] = not app.config['SHOW_LOGIN_PAGE']
+    return redirect('/admin/dashboard')
 
 
 # Route for user login
@@ -229,10 +290,43 @@ def admin_login():
     return render_template('admin_login.html', form=form)
 
 
+# Update the admin_dashboard route in app.py
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
-    return render_template('admin_dashboard.html')
+    # Fetch all users
+    users = User.query.all()
+
+    # Query all cars from the database
+    all_cars = Vehicle.query.all()
+
+    # Count the number of cars for each make and model
+    make_counts = {}
+    make_models = {}
+
+    for car in all_cars:
+        make = car.make
+        model = car.model
+
+        # Increment make count
+        make_counts[make] = make_counts.get(make, 0) + 1
+
+        # Increment model count within make
+        if make not in make_models:
+            make_models[make] = {}
+
+        make_models[make][model] = make_models[make].get(model, 0) + 1
+
+    # Fetch key application statistics
+    total_users = User.query.count()
+    total_vehicles = len(all_cars)
+
+    # Fetch all contact messages from the database
+    messages = Contact.get_all_messages()
+
+    return render_template('admin_dashboard.html', make_counts=make_counts, make_models=make_models, users=users,
+                           total_users=total_users, total_vehicles=total_vehicles, error_log=current_user.error_log,
+                           messages=messages)
 
 
 @app.route('/user/main')
@@ -250,6 +344,7 @@ def logout():
 
 
 @app.route('/car_details/<int:car_id>')
+@maintenance_required
 def car_details(car_id):
     car = Vehicle.query.get_or_404(car_id)
     return render_template('pages/car-details.html', car=car)
@@ -257,6 +352,7 @@ def car_details(car_id):
 
 # Route to display the form for adding a new vehicle
 @app.route('/add_vehicle_form', methods=['GET', 'POST'])
+@maintenance_required
 def add_vehicle_form():
     form = AddVehicleForm()
 
@@ -271,6 +367,7 @@ def add_vehicle_form():
 
 # Route for adding a new vehicle
 @app.route('/add_vehicle', methods=['GET', 'POST'])
+@maintenance_required
 def add_vehicle():
     if request.method == 'POST':
         # Extract existing vehicle details
@@ -336,7 +433,6 @@ def add_vehicle():
     return render_template('admin/add_vehicle.html')
 
 
-
 # Helper function to save a single image
 def save_image(image):
     filename = secure_filename(image.filename)
@@ -352,7 +448,9 @@ def save_images(images):
         filenames.append(filename)
     return filenames
 
+
 @app.route('/admin/view_and_delete_cars', methods=['GET', 'POST'])
+@maintenance_required
 @login_required
 def view_and_delete_cars():
     # Check if the current user is an admin
@@ -373,7 +471,9 @@ def view_and_delete_cars():
 
     return render_template('admin/view_and_delete_cars.html', cars=cars)
 
+
 @app.route('/delete_vehicle/<int:car_id>', methods=['POST'])
+@maintenance_required
 @login_required
 def delete_vehicle(car_id):
     # Check if the current user is an admin
@@ -392,48 +492,50 @@ def delete_vehicle(car_id):
     return redirect(url_for('view_and_delete_cars'))
 
 
-# Route for editing a vehicle
-@app.route('/edit_vehicle/<int:car_id>', methods=['GET', 'POST'])
-@login_required
-def edit_vehicle(car_id):
-    if not current_user.is_admin:
-        flash('Permission denied. Only admin users can edit vehicles.', 'danger')
-        return redirect(url_for('home'))
+# Route to edit a specific vehicle
+@app.route('/edit_vehicle/<int:id>', methods=['GET', 'POST'])
+@maintenance_required
+def edit_vehicle(id):
+    vehicle = Vehicle.query.get_or_404(id)
 
-    car = Vehicle.query.get_or_404(car_id)
-    form = EditVehicleForm(obj=car)
+    if request.method == 'POST':
+        # Update Vehicle model attributes
+        vehicle.type = request.form['type']
+        vehicle.make = request.form['make']
+        vehicle.model = request.form['model']
+        vehicle.first_registration = request.form['first_registration']
+        vehicle.mileage = request.form['mileage']
+        vehicle.fuel = request.form['fuel']
+        vehicle.engine_size = request.form['engine_size']
+        vehicle.power = request.form['power']
+        vehicle.gearbox = request.form['gearbox']
+        vehicle.num_seats = request.form['num_seats']
+        vehicle.doors = request.form['doors']
+        vehicle.color = request.form['color']
 
-    if car.additional_details:
-        form.price.data = car.additional_details.price
-        form.description.data = car.additional_details.description
-        form.extras.data = car.additional_details.extras
+        # Update AdditionalDetails model attributes
+        additional_details = vehicle.additional_details
+        additional_details.price = request.form['price']
+        additional_details.description = request.form['description']
+        additional_details.extras = request.form['extras']
+        additional_details.images = request.form['images']
 
-    if form.validate_on_submit():
-        # Populate the car object with form data (excluding nested objects)
-        form.populate_obj(car)
+        db.session.commit()
+        return redirect(url_for('view_vehicle', id=vehicle.id))
 
-        # Manually update additional_details with form data
-        car.additional_details.price = form.price.data
-        car.additional_details.description = form.description.data
-        car.additional_details.extras = form.extras.data
+    return render_template('admin/edit_vehicle.html', vehicle=vehicle)
 
-        if 'images' in request.files:
-            images = request.files.getlist('images')
-            car.additional_details.images = ','.join(save_images(images))
 
-        try:
-            db.session.commit()
-            flash('Vehicle details updated successfully!', 'success')
-            return redirect(url_for('view_and_delete_cars'))
-        except Exception as e:
-            flash(f'Error updating vehicle details: {str(e)}', 'danger')
-            db.session.rollback()
-
-    return render_template('admin/edit_vehicle.html', car=car, form=form)
-
+# Route to view a specific vehicle
+@app.route('/view_vehicle/<int:id>')
+@maintenance_required
+def view_vehicle(id):
+    vehicle = Vehicle.query.get_or_404(id)
+    return render_template('admin/view_vehicle.html', vehicle=vehicle)
 
 
 @app.route('/all_cars', methods=['GET'])
+@maintenance_required
 def all_cars():
     # Query distinct values for each filter field
     vehicle_types = Vehicle.query.with_entities(Vehicle.type).distinct().all()
@@ -490,37 +592,207 @@ def all_cars():
     print("Filters Applied:", filters_applied)
 
     # Pass the distinct values, filtered cars, and filters_applied to the template
-    return render_template('pages/cars.html', vehicle_types=vehicle_types, makes=makes, fuels=fuels, gearboxes=gearboxes,
+    return render_template('pages/cars.html', vehicle_types=vehicle_types, makes=makes, fuels=fuels,
+                           gearboxes=gearboxes,
                            cars=filtered_cars, all_cars=all_cars, filters_applied=filters_applied)
 
 
 @app.route('/about')
+@maintenance_required
 def about():
     return render_template('pages/about.html')
 
+
 @app.route('/team')
+@maintenance_required
 def team():
     return render_template('pages/team.html')
 
+
 @app.route('/blog')
+@maintenance_required
 def blog():
-    return render_template('pages/blog.html')
+    # Fetch all blogs from the database
+    blogs = Blog.query.all()
+
+    return render_template('pages/blog.html', blogs=blogs)
+
+
+@app.route('/view_blog/<int:blog_id>')
+@maintenance_required
+def view_blog(blog_id):
+    # Fetch the specific blog from the database
+    blog = Blog.query.get_or_404(blog_id)
+
+    return render_template('pages/blog-post.html', blog=blog)
+
 
 @app.route('/testimonials')
+@maintenance_required
 def testimonials():
     return render_template('pages/testimonials.html')
 
+
 @app.route('/faq')
+@maintenance_required
 def faq():
     return render_template('pages/faq.html')
 
+
 @app.route('/terms')
+@maintenance_required
 def terms():
     return render_template('pages/terms.html')
 
+
 @app.route('/contact')
+@maintenance_required
 def contact():
     return render_template('pages/contact.html')
+
+
+# Add a new route to handle user deletion
+@app.route('/admin/delete_user/<int:user_id>', methods=['POST'])
+@login_required
+@maintenance_required
+def delete_user(user_id):
+    # Ensure that the logged-in user is an admin (optional)
+    if not current_user.is_admin:
+        flash('Permission denied. Only admin users can delete users.', 'danger')
+        return redirect(url_for('admin_dashboard'))
+
+    # Fetch the user from the database
+    user = User.query.get_or_404(user_id)
+
+    # Delete the user from the database
+    db.session.delete(user)
+    db.session.commit()
+
+    flash('User deleted successfully!', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+'''
+@app.errorhandler(Exception)
+def error_handler(e):
+    # Log the error
+    current_user.add_to_error_log(str(e))
+
+    # You may also log additional details like stack trace
+    import traceback
+    error_traceback = traceback.format_exc()
+    current_user.add_to_error_log(error_traceback)
+
+    # Render an error page or redirect to a specific error route
+    return render_template('admin/error.html', error_message=str(e)), 500
+'''
+
+@app.route('/', methods=['GET', 'POST'])
+def submit_form():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+
+        # Create a new Contact instance and add it to the database
+        new_contact = Contact(name=name, email=email, subject=subject, message=message)
+        db.session.add(new_contact)
+        db.session.commit()
+
+        return "Form submitted successfully!"
+
+    return render_template('admin_dashboard.html')  # Replace with the actual name of your HTML template
+
+
+@app.route('/reply/<int:contact_id>', methods=['GET', 'POST'])
+def reply_form(contact_id):
+    contact = Contact.query.get_or_404(contact_id)
+
+    if request.method == 'POST':
+        reply_message = request.form.get('reply_message')
+
+        # Send the reply as an email
+        send_reply_email(contact.email, contact.name, reply_message)
+
+        # Update the replied status
+        contact.replied = True
+        db.session.commit()
+
+        # Redirect to the admin dashboard route
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('admin/reply_form.html', contact=contact)
+
+
+def send_reply_email(receiver_email, receiver_name, reply_message):
+    # This function sends the reply as an email
+    subject = 'Your Message Reply'
+    body = f"Dear {receiver_name},\n\nThank you for your message. Here is the reply:\n\n{reply_message}\n\nBest regards,\nAutoHub Team\na subsidiary of RetailSysX"
+
+    # Create a Message instance
+    message = Message(subject=subject, recipients=[receiver_email], body=body)
+
+    # Send the email
+    mail.send(message)
+
+
+
+
+@app.route('/delete/<int:contact_id>', methods=['POST'])
+def delete_message(contact_id):
+    contact = Contact.query.get_or_404(contact_id)
+
+    # Delete the contact message from the database
+    db.session.delete(contact)
+    db.session.commit()
+
+    return redirect(url_for('admin_dashboard'))
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/add_blog', methods=['GET', 'POST'])
+@maintenance_required
+def add_blog():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        author = request.form.get('author')
+
+        # Check if the post request has the file part
+        if 'image' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+
+        file = request.files['image']
+
+        # If the user does not select a file, the browser submits an empty file without a filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+
+        # Check if the file extension is allowed
+        if file and allowed_file(file.filename):
+            # Secure the filename to prevent any malicious activity
+            filename = secure_filename(file.filename)
+
+            # Save the file to the upload folder
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        else:
+            flash('Invalid file format. Allowed formats are jpg, jpeg, and png.')
+            return redirect(request.url)
+
+        new_blog = Blog(title=title, content=content, author=author, image_url=image_url)
+        db.session.add(new_blog)
+        db.session.commit()
+
+        flash('Blog added successfully!')
+        return redirect(url_for('blog'))
+
+    return render_template('admin/add_blog.html')
 
 if __name__ == '__main__':
     with app.app_context():

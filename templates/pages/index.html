@@ -152,7 +152,7 @@
 
 
 
-							<p class="text-center"><a href="cars.html">View Cars &nbsp;<i class="fa fa-long-arrow-right"></i></a></p>
+							<p class="text-center"><a href="{{ url_for('all_cars') }}">View Cars &nbsp;<i class="fa fa-long-arrow-right"></i></a></p>
 							
 							<br>
 
@@ -172,7 +172,7 @@
 								</div>
 							</div>
 
-							<p class="text-center"><a href="../../testimonials.html">Read More &nbsp;<i class="fa fa-long-arrow-right"></i></a></p>
+							<p class="text-center"><a href="{{ url_for('testimonials') }}">Read More &nbsp;<i class="fa fa-long-arrow-right"></i></a></p>
 
 							<br>
 
@@ -204,7 +204,7 @@
 								</div>
 							</div>
 
-							<p class="text-center"><a href="../../blog.html">Read More &nbsp;<i class="fa fa-long-arrow-right"></i></a></p>
+							<p class="text-center"><a href="{{ url_for('blog') }}">Read More &nbsp;<i class="fa fa-long-arrow-right"></i></a></p>
 
 							
 						</div>
@@ -215,7 +215,7 @@
 						<div class="inner">
 							<section>
 								<h2>Contact Us</h2>
-								<form method="post" action="#">
+								<form method="post" action="{{ url_for('submit_form') }}">
 									<div class="fields">
 										<div class="field half">
 											<input type="text" name="name" id="name" placeholder="Name" />
@@ -247,7 +247,7 @@
 								<h2>Contact Info</h2>
 
 								<ul class="alt">
-									<li><span class="fa fa-envelope-o"></span> <a href="#">contact@company.com</a></li>
+									<li><span class="fa fa-envelope-o"></span> <a href="#">AutoHub@gmail.com</a></li>
 									<li><span class="fa fa-phone"></span> +1 333 4040 5566 </li>
 									<li><span class="fa fa-map-pin"></span> 212 Barrington Court New York, ABC 10001 United States of America</li>
 								</ul>

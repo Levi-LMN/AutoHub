@@ -1,0 +1,19 @@
+
+
+{% block content %}
+    <h1>Reply to {{ contact.name }}'s Message</h1>
+    <p>Original Message:</p>
+    <p><strong>Name:</strong> {{ contact.name }}</p>
+    <p><strong>Email:</strong> {{ contact.email }}</p>
+    <p><strong>Subject:</strong> {{ contact.subject }}</p>
+    <p><strong>Message:</strong> {{ contact.message }}</p>
+
+    <form method="post" action="{{ url_for('reply_form', contact_id=contact.id) }}">
+        <label for="reply_message">Reply:</label>
+        <textarea name="reply_message" id="reply_message" rows="3" required></textarea>
+        <br>
+        <button type="submit">Send Reply</button>
+    </form>
+
+
+{% endblock %}

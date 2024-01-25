@@ -1,115 +1,66 @@
-<!-- edit_vehicle.html -->
+<!-- templates/edit_vehicle.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Vehicle</title>
+</head>
+<body>
+    <h1>Edit Vehicle</h1>
 
-{% block content %}
-<div class="container mt-5">
-    <h2>Edit Vehicle Details</h2>
-    <form method="post" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
+    <form method="POST" action="{{ url_for('edit_vehicle', id=vehicle.id) }}">
+        <label for="type">Type:</label>
+        <input type="text" name="type" value="{{ vehicle.type }}" required><br>
 
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="alert alert-dismissible fade show">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        {% endif %}
-    {% endwith %}
+        <label for="make">Make:</label>
+        <input type="text" name="make" value="{{ vehicle.make }}" required><br>
 
-        <div class="form-group">
-            <label for="type">Type</label>
-            <select name="type" class="form-control" required>
-                <option value="new" {% if form.type.data == 'new' %}selected{% endif %}>New</option>
-                <option value="used" {% if form.type.data == 'used' %}selected{% endif %}>Used</option>
-            </select>
-        </div>
+        <label for="model">Model:</label>
+        <input type="text" name="model" value="{{ vehicle.model }}" required><br>
 
+        <label for="first_registration">First Registration:</label>
+        <input type="text" name="first_registration" value="{{ vehicle.first_registration }}" required><br>
 
-        <div class="form-group">
-            <label for="make">Make</label>
-            {{ form.make(class="form-control") }}
-        </div>
+        <label for="mileage">Mileage:</label>
+        <input type="text" name="mileage" value="{{ vehicle.mileage }}" required><br>
 
-        <div class="form-group">
-            <label for="model">Model</label>
-            {{ form.model(class="form-control") }}
-        </div>
+        <label for="fuel">Fuel:</label>
+        <input type="text" name="fuel" value="{{ vehicle.fuel }}" required><br>
 
-        <div class="form-group">
-            <label for="first_registration">First Registration</label>
-            {{ form.first_registration(class="form-control") }}
-        </div>
+        <label for="engine_size">Engine Size:</label>
+        <input type="text" name="engine_size" value="{{ vehicle.engine_size }}" required><br>
 
-        <div class="form-group">
-            <label for="mileage">Mileage</label>
-            {{ form.mileage(class="form-control") }}
-        </div>
+        <label for="power">Power:</label>
+        <input type="text" name="power" value="{{ vehicle.power }}" required><br>
 
-        <div class="form-group">
-            <label for="fuel">Fuel</label>
-            <select name="fuel" class="form-control" required>
-                <option value="petrol" {% if form.fuel.data == 'petrol' %}selected{% endif %}>Petrol</option>
-                <option value="diesel" {% if form.fuel.data == 'diesel' %}selected{% endif %}>Diesel</option>
-                <option value="hybrid" {% if form.fuel.data == 'hybrid' %}selected{% endif %}>Hybrid</option>
-            </select>
-        </div>
+        <label for="gearbox">Gearbox:</label>
+        <input type="text" name="gearbox" value="{{ vehicle.gearbox }}" required><br>
 
+        <label for="num_seats">Number of Seats:</label>
+        <input type="text" name="num_seats" value="{{ vehicle.num_seats }}" required><br>
 
-        <div class="form-group">
-            <label for="engine_size">Engine Size</label>
-            {{ form.engine_size(class="form-control") }}
-        </div>
+        <label for="doors">Doors:</label>
+        <input type="text" name="doors" value="{{ vehicle.doors }}" required><br>
 
-        <div class="form-group">
-            <label for="power">Power</label>
-            {{ form.power(class="form-control") }}
-        </div>
+        <label for="color">Color:</label>
+        <input type="text" name="color" value="{{ vehicle.color }}" required><br>
 
-        <div class="form-group">
-            <label for="gearbox">Gearbox</label>
-            <select name="gearbox" class="form-control" required>
-                <option value="automatic" {% if form.gearbox.data == 'automatic' %}selected{% endif %}>Automatic</option>
-                <option value="manual" {% if form.gearbox.data == 'manual' %}selected{% endif %}>Manual</option>
-            </select>
-        </div>
+        <h2>Additional Details</h2>
 
+        <label for="price">Price:</label>
+        <input type="text" name="price" value="{{ vehicle.additional_details.price }}" required><br>
 
-        <div class="form-group">
-            <label for="num_seats">Number of Seats</label>
-            {{ form.num_seats(class="form-control") }}
-        </div>
+        <label for="description">Description:</label>
+        <textarea name="description" rows="4" required>{{ vehicle.additional_details.description }}</textarea><br>
 
-        <div class="form-group">
-            <label for="doors">Doors</label>
-            {{ form.doors(class="form-control") }}
-        </div>
+        <label for="extras">Extras:</label>
+        <textarea name="extras" rows="4">{{ vehicle.additional_details.extras }}</textarea><br>
 
-        <div class="form-group">
-            <label for="color">Color</label>
-            {{ form.color(class="form-control") }}
-        </div>
+        <label for="images">Images (comma-separated):</label>
+        <input type="text" name="images" value="{{ vehicle.additional_details.images }}" required><br>
 
-       <div class="form-group">
-            <label for="price">Price</label>
-            {{ form.price(class="form-control") }}
-        </div>
-
-        <div class="form-group">
-            <label for="description">Description</label>
-            {{ form.description(class="form-control") }}
-        </div>
-
-        <div class="form-group">
-            <label for="extras">Extras</label>
-            {{ form.extras(class="form-control") }}
-        </div>
-
-
-
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <input type="submit" value="Save Changes">
     </form>
-</div>
-{% endblock %}
+</body>
+</html>
