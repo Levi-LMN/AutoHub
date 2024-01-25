@@ -164,6 +164,23 @@ class Blog(db.Model):
         return f"Blog(id={self.id}, title={self.title}, author={self.author})"
 
 
+# Define an error handler for HTTP 500 - Internal Server Error
+@app.errorhandler(500)
+def internal_server_error(error):
+    # Get the exception information
+    exc_info = traceback.format_exc()
+
+    # Check if the current user is an admin
+    is_admin = session.get('username') == 'admin'
+
+    if is_admin:
+        # Render the admin error template
+        return render_template('500_admin.html', error=error, exc_info=exc_info), 500
+    else:
+        # Render the regular error template
+        return render_template('500.html'), 500
+
+
 # Route for user registration
 @app.route('/register', methods=['GET', 'POST'])
 def register():
